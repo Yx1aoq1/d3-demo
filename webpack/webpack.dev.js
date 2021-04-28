@@ -1,6 +1,7 @@
 const { merge } = require('webpack-merge')
 const common = require('./webpack.common.js')
 const path = require('path')
+const webpack = require('webpack')
 
 function resolve (dir) {
   return path.join(__dirname, dir)
@@ -17,4 +18,7 @@ module.exports = merge(common, {
     filename: 'js/[name].[hash].js',
     chunkFilename: 'js/[name].[hash].js'
   },
+  
+  devtool: false,
+  plugins: [new webpack.SourceMapDevToolPlugin({})],
 })

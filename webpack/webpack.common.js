@@ -1,4 +1,3 @@
-const webpack = require('webpack')
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
@@ -32,11 +31,23 @@ module.exports = {
       {
         test: /\.js$/,
         loader: 'babel-loader',
+        exclude: /node_modules/,
         options: {
-          presets: ['@babel/preset-env']
+          presets: [
+            '@babel/preset-env',
+          ],
+          plugins: [
+            '@babel/plugin-transform-runtime'
+          ]
         }
       }
     ]
+  },
+
+  resolve: {
+    alias: {
+      '@': resolve('../src/')
+    },
   },
 
   plugins: [
