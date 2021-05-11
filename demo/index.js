@@ -5,17 +5,17 @@ const data = {
     {
       id: 'node1',
       type: '',
-      x: 300,
+      x: 200,
       y: 150,
       config: {
-        name: 'node1'
+        name: 'node1-abc'
       }
     },
     {
       id: 'node2',
       type: '',
-      x: 300,
-      y: 150,
+      x: 200,
+      y: 100,
       config: {
         name: 'node2'
       }
@@ -37,6 +37,15 @@ const data = {
       config: {
         name: 'node4'
       }
+    },
+    {
+      id: 'node5',
+      type: '',
+      x: 200,
+      y: 200,
+      config: {
+        name: 'node5'
+      }
     }
   ],
   links: [
@@ -51,13 +60,20 @@ const data = {
     {
       source: 'node1',
       target: 'node4'
+    },
+    {
+      source: 'node5',
+      target: 'node4'
     }
   ]
 }
 
 const tp = new D3Topology({
   data,
-  container: '#topo-container'
+  container: '#topo-container',
+  nodeText: {
+    text: d => d.config.name
+  }
 })
 
 tp.init()
