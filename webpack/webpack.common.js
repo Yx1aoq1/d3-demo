@@ -1,6 +1,7 @@
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const webpack = require('webpack')
 
 function resolve (dir) {
   return path.join(__dirname, dir)
@@ -51,6 +52,10 @@ module.exports = {
   },
 
   plugins: [
+    new webpack.ProvidePlugin({
+      d3: 'd3',
+      _: 'lodash',
+    }),
     new MiniCssExtractPlugin({
       filename: 'static/css/[name].[hash].css'
     }),

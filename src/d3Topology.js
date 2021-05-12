@@ -1,6 +1,3 @@
-import * as d3 from 'd3'
-import * as _ from 'lodash'
-
 const defaultOptions = {
   container: 'body',
   width: 500,
