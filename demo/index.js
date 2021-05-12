@@ -1,11 +1,12 @@
 import { D3Topology } from '../src'
+import obj from './test_1.json'
 
 const data = {
   nodes: [
     {
       id: 'node1',
       type: '',
-      x: 200,
+      x: 100,
       y: 150,
       config: {
         name: 'node1-abc'
@@ -33,7 +34,7 @@ const data = {
       id: 'node4',
       type: '',
       x: 200,
-      y: 450,
+      y: 400,
       config: {
         name: 'node4'
       }
@@ -71,8 +72,9 @@ const data = {
 const tp = new D3Topology({
   data,
   container: '#topo-container',
-  nodeText: {
-    text: d => d.config.name
+  nodeConfig: {
+    showLabel: true,
+    labelText: d => d.name
   }
 })
 
