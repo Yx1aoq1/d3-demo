@@ -51,16 +51,8 @@ const data = {
   ],
   links: [
     {
-      source: {
-        id: 'node1',
-        x: 100,
-        y: 150,
-      },
-      target: {
-        id: 'node2',
-        x: 200,
-        y: 100,
-      }
+      source: 'node1',
+      target: 'node2'
     },
     {
       source: 'node2',

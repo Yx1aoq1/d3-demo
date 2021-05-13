@@ -63,10 +63,7 @@ export default class D3Topology {
   ticked () {
     this.links
       .select('line')
-      .attr('x1', d => {
-        console.log('d', d)
-        return d.source.x
-      })
+      .attr('x1', d => d.source.x)
       .attr('y1', d => d.source.y)
       .attr('x2', d => d.target.x)
       .attr('y2', d => d.target.y)
@@ -102,14 +99,31 @@ export default class D3Topology {
     // 更新数据
     this._nodes = _.cloneDeep(nodes)
     this._links = _.cloneDeep(links)
-    this.createLinks()
-    this.createNodes()
+
     if (this.animate) {
       this.simulation.nodes(this._nodes)
       this.simulation.force('link').links(this._links)
     } else {
-      this.ticked()
+      this.setLinksStartEnd()
     }
+    // node后绘制确保覆盖在线上
+    this.createLinks()
+    this.createNodes()
+    
+    !this.animate && this.ticked()
+  }
+
+  setLinksStartEnd () {
+    this._links = this._links.map(item => {
+      const sourceNode = this._nodes.find(node => node.id === item.source)
+      const targetNode = this._nodes.find(node => node.id === item.target)
+      // 重新赋值source和target，以确认线的位置
+      return {
+        ...item,
+        source: sourceNode,
+        target: targetNode
+      }
+    })
   }
 
   attachEvent () {
@@ -139,6 +153,8 @@ export default class D3Topology {
   }
 
   drag (simulation) {
+    const self = this
+
     function dragstarted(event, d) {
       if (!event.active) simulation.alphaTarget(0.3).restart()
       d.fx = d.x
@@ -148,6 +164,12 @@ export default class D3Topology {
     function dragged(event, d) {
       d.fx = event.x
       d.fy = event.y
+
+      if (!self.animate) {
+        d.x = event.x
+        d.y = event.y
+        self.ticked()
+      }
     }
     
     function dragended(event, d) {
