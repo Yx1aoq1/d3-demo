@@ -28,10 +28,6 @@ export default class D3Topology {
 
     this.d3Node = new D3Node(this.options.nodeConfig)
     this.d3Line = new D3Line(this.options.lineConfig)
-
-    const { nodes, links } = this.data
-    this._nodes = _.cloneDeep(nodes)
-    this._links = _.cloneDeep(links)
   }
 
   init () {
@@ -53,28 +49,24 @@ export default class D3Topology {
   render () {
     this.initForceSimulation()
     // 节点图标后面创建，可以遮挡图标上面的连接线
-    this.createLinks()
-    this.createNodes()
-    this.ticked()
+    this.update(this.data)
   }
 
   initForceSimulation () {
     this.simulation = d3.forceSimulation()
-      .nodes(this._nodes)
       .force('charge', d3.forceManyBody())
       .force('center', d3.forceCenter(this.width / 2, this.height / 2))
-      .force('link',  d3.forceLink(this._links).id(d => d.id))
+      .force('link',  d3.forceLink().id(d => d.id).distance(this.options.distance))
       .on('tick', this.ticked.bind(this))
-
-    if (!this.animate) {
-      this.simulation.stop()
-    }
   }
 
   ticked () {
     this.links
       .select('line')
-      .attr('x1', d => d.source.x)
+      .attr('x1', d => {
+        console.log('d', d)
+        return d.source.x
+      })
       .attr('y1', d => d.source.y)
       .attr('x2', d => d.target.x)
       .attr('y2', d => d.target.y)
@@ -104,6 +96,20 @@ export default class D3Topology {
       .attr('class', 'topology__node')
     
     this.d3Node.draw(this.nodes)
+  }
+
+  update ({ nodes, links }) {
+    // 更新数据
+    this._nodes = _.cloneDeep(nodes)
+    this._links = _.cloneDeep(links)
+    this.createLinks()
+    this.createNodes()
+    if (this.animate) {
+      this.simulation.nodes(this._nodes)
+      this.simulation.force('link').links(this._links)
+    } else {
+      this.ticked()
+    }
   }
 
   attachEvent () {
