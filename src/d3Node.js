@@ -1,3 +1,6 @@
+
+import D3Tip from './d3Tip'
+
 const defaultOptions = {
   custom: false,
   type: 'circle',
@@ -13,11 +16,15 @@ const defaultOptions = {
     color: '#333'
   },
   labelText: d => d.id,
-  customLable: null
+  customLable: null,
+  tooltip: {
+    show: true
+  }
 }
 
 export default class D3Node {
-  constructor (options) {
+  constructor (svg, options) {
+    this.svg = svg
     this.options = _.merge(defaultOptions, options)
     this.custom = this.options.custom
     this.type = this.options.type
@@ -29,12 +36,14 @@ export default class D3Node {
       this.custom(nodes)
       return
     }
-
+    // 根据不同的type设置绘制节点
     const drawStrategies = new Map([
       ['circle', this.drawCircle]
     ])
-
-    return drawStrategies.get(this.type).call(this, nodes)
+    this.node = drawStrategies.get(this.type).call(this, nodes)
+    // 绑定事件
+    this.attachEvent()
+    return this.node
   }
 
   drawLabel (nodes) {
@@ -61,5 +70,26 @@ export default class D3Node {
     
     this.showLabel && this.drawLabel(nodes)
     return node
+  }
+
+  attachEvent () {
+    const self = this
+    const showTooltip = !!this.options.tooltip.show
+
+    showTooltip && this.initTooltip()
+
+    this.node.on('mouseenter', function () {
+      d3.select(this).style('cursor', 'pointer')
+      showTooltip && self.nodeTip.show(...arguments, this)
+    })
+
+    this.node.on('mouseout', function() {
+      showTooltip && self.nodeTip.hide(...arguments, this)
+    })
+  }
+
+  initTooltip () {
+    this.nodeTip = new D3Tip(this.svg, this.options.tooltip)
+    this.nodeTip.init()
   }
 }

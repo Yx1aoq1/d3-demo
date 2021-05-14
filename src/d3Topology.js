@@ -25,9 +25,6 @@ export default class D3Topology {
     this.data = this.options.data
     this.container = this.options.container
     this.animate = this.options.animate
-
-    this.d3Node = new D3Node(this.options.nodeConfig)
-    this.d3Line = new D3Line(this.options.lineConfig)
   }
 
   init () {
@@ -44,6 +41,9 @@ export default class D3Topology {
     
     this.zoom = this.svg.append('g')
       .attr('class', 'topology__zoom')
+    
+    this.d3Node = new D3Node(this.svg, this.options.nodeConfig)
+    this.d3Line = new D3Line(this.svg, this.options.lineConfig)
   }
 
   render () {
@@ -128,13 +128,10 @@ export default class D3Topology {
 
   attachEvent () {
     const { scale, dragable } = this.options
-
+    // zoom 缩放功能
     scale && this.initZoomBehavior(scale)
+    // 拖拽节点
     dragable && this.initDragBehavior()
-    // tooltip
-    this.nodes.on('mouseenter', function () {
-      d3.select(this).style('cursor', 'pointer')
-    })
   }
 
   initZoomBehavior (scale) {

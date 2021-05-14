@@ -1,5 +1,4 @@
 import { D3Topology } from '../src'
-import obj from './test_1.json'
 
 const data = {
   nodes: [
@@ -74,8 +73,14 @@ const tp = new D3Topology({
   container: '#topo-container',
   nodeConfig: {
     showLabel: true,
-    labelText: d => d.name
-  }
+    labelText: d => d.config.name,
+    tooltip: {
+      show: true,
+      html: d => {
+        return `<div>名称: ${d.config.name}</div>`
+      }
+    }
+  },
 })
 
 tp.init()

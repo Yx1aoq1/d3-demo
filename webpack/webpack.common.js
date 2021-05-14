@@ -18,14 +18,18 @@ module.exports = {
     rules: [
       {
         test: /\.css$/,
-        use: [MiniCssExtractPlugin.loader, 'css-loader']
+        use: [
+          // MiniCssExtractPlugin.loader,
+          'style-loader',
+          'css-loader'
+        ]
       },
       {
         test: /\.less$/,
         use: [
-          MiniCssExtractPlugin.loader,
-          'css-loader',
+          // MiniCssExtractPlugin.loader,
           'style-loader',
+          'css-loader',
           'less-loader'
         ]
       },
@@ -56,9 +60,9 @@ module.exports = {
       d3: 'd3',
       _: 'lodash',
     }),
-    new MiniCssExtractPlugin({
-      filename: 'static/css/[name].[hash].css'
-    }),
+    // new MiniCssExtractPlugin({
+    //   filename: 'static/css/[name].[hash].css'
+    // }),
     new HtmlWebpackPlugin({ //  将webpack生成的文件在html中引用
       filename: 'index.html', //  文件路径
       template: resolve('../index.html'), //  文件模板

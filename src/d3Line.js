@@ -6,7 +6,8 @@ const defaultOptions = {
 }
 
 export default class D3Line {
-  constructor (options) {
+  constructor (svg, options) {
+    this.svg = svg
     this.options = _.merge(defaultOptions, options)
     this.custom = this.options.custom || false
     this.type = this.options.type || 'circle'
