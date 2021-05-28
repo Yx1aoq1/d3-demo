@@ -20,7 +20,8 @@ export default class D3Line {
     }
 
     const drawStrategies = new Map([
-      ['solid', this.drawSolidLine]
+      ['solid', this.drawSolidLine],
+      ['curve', this.drawCurveLine]
     ])
 
     return drawStrategies.get(this.type).call(this, links)
@@ -28,8 +29,20 @@ export default class D3Line {
 
   drawSolidLine (links) {
     const { width, color } = this.options
-    return links.append('line')
+    return links.append('path')
       .attr('stroke', color)
       .attr('stroke-width', width)
+  }
+
+  drawCurveLine (links) {
+    const { width, color } = this.options
+    return links.append('path')
+      .style('fill','none')
+      .style('stroke', color)
+      .style('stroke-width', width)
+  }
+
+  ticked () {
+
   }
 }

@@ -18,7 +18,7 @@ const defaultOptions = {
   labelText: d => d.id,
   customLable: null,
   tooltip: {
-    show: true
+    show: false
   }
 }
 

@@ -5,8 +5,6 @@ const data = {
     {
       id: 'node1',
       type: '',
-      x: 100,
-      y: 150,
       config: {
         name: 'node1-abc'
       }
@@ -14,8 +12,6 @@ const data = {
     {
       id: 'node2',
       type: '',
-      x: 200,
-      y: 100,
       config: {
         name: 'node2'
       }
@@ -23,8 +19,6 @@ const data = {
     {
       id: 'node3',
       type: '',
-      x: 300,
-      y: 300,
       config: {
         name: 'node3'
       }
@@ -32,8 +26,6 @@ const data = {
     {
       id: 'node4',
       type: '',
-      x: 200,
-      y: 400,
       config: {
         name: 'node4'
       }
@@ -41,8 +33,6 @@ const data = {
     {
       id: 'node5',
       type: '',
-      x: 200,
-      y: 200,
       config: {
         name: 'node5'
       }
@@ -71,16 +61,16 @@ const data = {
 const tp = new D3Topology({
   data,
   container: '#topo-container',
+  dragable: true,
+  animate: true,
+  distance: 200,
   nodeConfig: {
     showLabel: true,
-    labelText: d => d.config.name,
-    tooltip: {
-      show: true,
-      html: d => {
-        return `<div>名称: ${d.config.name}</div>`
-      }
-    }
+    labelText: d => d.config.name
   },
+  lineConfig: {
+    type: 'curve'
+  }
 })
 
 tp.init()

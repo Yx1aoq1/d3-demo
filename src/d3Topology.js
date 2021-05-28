@@ -5,6 +5,7 @@ const defaultOptions = {
   container: 'body',
   width: 500,
   height: 500,
+  svgAttrs: {},
   animate: false,
   scale: true,
   dragable: true,
@@ -34,10 +35,18 @@ export default class D3Topology {
   }
 
   initContainer () {
+    const { svgAttrs } = this.options
     this.svg = d3.select(this.container).append('svg')
       .attr('width', this.width)
       .attr('height', this.height)
       .attr('class', 'topology__svg')
+    // 设置用户自定义的属性
+    Object.keys(svgAttrs).map(key => {
+      const attrValue = typeof svgAttrs[key] === 'function'
+        ? svgAttrs[key].call(this)
+        : svgAttrs[key]
+      this.svg.attr(key, attrValue)
+    })
     
     this.zoom = this.svg.append('g')
       .attr('class', 'topology__zoom')
@@ -62,11 +71,15 @@ export default class D3Topology {
 
   ticked () {
     this.links
-      .select('line')
-      .attr('x1', d => d.source.x)
-      .attr('y1', d => d.source.y)
-      .attr('x2', d => d.target.x)
-      .attr('y2', d => d.target.y)
+      .select('path')
+      .attr('d', d => {
+        const path = d3.path()
+        const r = Math.hypot(d.target.x - d.source.x, d.target.y - d.source.y)
+        path.moveTo(d.source.x, d.source.y)
+        path.arcTo(d.source.x, d.source.y, d.target.x, d.target.y, r)
+        path.lineTo(d.target.x, d.target.y)
+        return path.toString()
+      })
       
     this.nodes
       .attr('cx', d => d.x)

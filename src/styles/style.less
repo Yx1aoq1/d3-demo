@@ -21,19 +21,19 @@
 .arrow-up {
   .base-arrow();
   border-bottom-color: @tip-bg-color;
-  filter: drop-shadow(0 1px @tip-arrow-shadow-fade);
+  filter: drop-shadow(0 -1px @tip-arrow-shadow-fade);
 }
 
 .arrow-left {
   .base-arrow();
   border-right-color: @tip-bg-color;
-  filter: drop-shadow(0 1px @tip-arrow-shadow-fade);
+  filter: drop-shadow(-1px 0 @tip-arrow-shadow-fade);
 }
 
 .arrow-right {
   .base-arrow();
   border-left-color: @tip-bg-color;
-  filter: drop-shadow(0 1px @tip-arrow-shadow-fade);
+  filter: drop-shadow(1px 0 @tip-arrow-shadow-fade);
 }
 
 .topology__tooltip {
@@ -56,8 +56,34 @@
   &::before {
     .base-before();
     .arrow-down();
-    top: calc(100% - @tip-arrow-size / 2);
+    top: 100%;
     left: calc(50% - @tip-arrow-size / 2);
   }
 }
 
+.topology__tooltip-bottom {
+  &::before {
+    .base-before();
+    .arrow-up();
+    bottom: 100%;
+    left: calc(50% - @tip-arrow-size / 2);
+  }
+}
+
+.topology__tooltip-left {
+  &::before {
+    .base-before();
+    .arrow-right();
+    bottom: calc(50% - @tip-arrow-size);
+    left: 100%;
+  }
+}
+
+.topology__tooltip-right {
+  &::before {
+    .base-before();
+    .arrow-left();
+    bottom: calc(50% - @tip-arrow-size);
+    left: -(2 * @tip-arrow-size);
+  }
+}

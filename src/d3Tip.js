@@ -62,7 +62,10 @@ export default class D3Tip {
   position (target) {
     // 根据不同的type设置绘制节点
     const placementStrategies = new Map([
-      ['top', this.topPosition]
+      ['top', this.topPosition],
+      ['bottom', this.bottomPosition],
+      ['left', this.leftPosition],
+      ['right', this.rightPosition]
     ])
 
     return placementStrategies.get(this.placement).call(this, target)
@@ -78,6 +81,45 @@ export default class D3Tip {
     return {
       y: transBox.y - (elemH + nodeBox.height),
       x: transBox.x - (elemW / 2 - nodeBox.x / 2)
+    }
+  }
+
+  bottomPosition (target) {
+    const matrix = target.getScreenCTM()
+    const nodeBox = target.getBBox()
+    const transBox = this.point.matrixTransform(matrix)
+    const elemW = this.element.offsetWidth
+    const elemH = this.element.offsetHeight
+
+    return {
+      y: transBox.y + nodeBox.height,
+      x: transBox.x - (elemW / 2 - nodeBox.x / 2)
+    }
+  }
+
+  leftPosition (target) {
+    const matrix = target.getScreenCTM()
+    const nodeBox = target.getBBox()
+    const transBox = this.point.matrixTransform(matrix)
+    const elemW = this.element.offsetWidth
+    const elemH = this.element.offsetHeight
+
+    return {
+      y: transBox.y - elemH / 2,
+      x: transBox.x - (elemW + nodeBox.width)
+    }
+  }
+
+  rightPosition (target) {
+    const matrix = target.getScreenCTM()
+    const nodeBox = target.getBBox()
+    const transBox = this.point.matrixTransform(matrix)
+    const elemW = this.element.offsetWidth
+    const elemH = this.element.offsetHeight
+
+    return {
+      y: transBox.y - elemH / 2,
+      x: transBox.x + nodeBox.width
     }
   }
 }
