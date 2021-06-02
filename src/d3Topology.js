@@ -1,3 +1,4 @@
+import { container } from 'webpack'
 import {
   noop,
   proxy
@@ -18,6 +19,7 @@ const defaultOptions = {
   alpha: 0.3,
   inited: noop,
   ticked: noop,
+  createLayers: noop,
   createLinks: noop,
   createNodes: noop
 }
@@ -69,6 +71,7 @@ export default class D3Topology {
   }
 
   update ({ nodes, links }) {
+    const context = this
     // 清除画布
     this.clear()
     // 更新数据
@@ -78,6 +81,7 @@ export default class D3Topology {
     this.simulation.nodes(this._nodes)
     this.simulation.force('link').links(this._links)
     // node后绘制确保覆盖在线上
+    this.layers = this.createLayers.call(this, this.zoom)
     this.links = this.createLinks.call(this, this.zoom, this._links)
     this.nodes = this.createNodes.call(this, this.zoom, this._nodes)
 
@@ -147,6 +151,7 @@ export default class D3Topology {
   }
 
   clear () {
+    this.layers && this.layers.remove()
     this.links && this.links.remove()
     this.nodes && this.nodes.remove()
   }
