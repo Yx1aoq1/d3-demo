@@ -53,6 +53,28 @@ module.exports = {
     alias: {
       '@': resolve('../src/')
     },
+    // 修复webpack5去掉polyfill导致一堆报错
+    fallback: {
+      'util': false,
+      'fs': false,
+      'tls': false,
+      'net': false,
+      'path': false,
+      'zlib': false,
+      'http': false,
+      'https': false,
+      'stream': false,
+      'crypto': false,
+      'crypto-browserify': false,
+      'vm': false,
+      'os': false,
+      'constants': false,
+      'buffer': false,
+      'assert': false,
+      'fs': false,
+      'child_process': false,
+      'worker_threads': false
+    } 
   },
 
   plugins: [
