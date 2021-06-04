@@ -1,4 +1,4 @@
-import { D3Topology } from '../src'
+import { D3Topology, D3Tip } from '../src'
 
 function createNode (id) {
   return {
@@ -35,6 +35,7 @@ const data = createTopoDatas(10, 15)
 
 let topo_nodes
 let topo_links
+let topo_tooltip
 const tp = new D3Topology({
   data,
   container: '#topo-container',
@@ -42,6 +43,10 @@ const tp = new D3Topology({
   width: 1000,
   animate: true,
   distance: 200,
+  inited () {
+    topo_tooltip = new D3Tip(this, {})
+    topo_tooltip.init()
+  },
   ticked () {
     topo_links
       .select('path')
@@ -81,7 +86,18 @@ const tp = new D3Topology({
       .attr('fill', '#333')
 
     return topo_nodes
-  }
+  },
+  bindEvents () {
+    const self = this
+    topo_nodes.on('mouseenter', function () {
+      d3.select(this).style('cursor', 'pointer')
+      !self.dragging && topo_tooltip.show(...arguments, this)
+    })
+
+    topo_nodes.on('mouseout', function() {
+      topo_tooltip.hide(...arguments, this)
+    })
+  },
 })
 
 tp.init()

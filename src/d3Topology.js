@@ -1,4 +1,3 @@
-import { container } from 'webpack'
 import {
   noop,
   proxy
@@ -19,6 +18,7 @@ const defaultOptions = {
   alpha: 0.3,
   inited: noop,
   ticked: noop,
+  bindEvents: noop,
   createLayers: noop,
   createLinks: noop,
   createNodes: noop
@@ -26,6 +26,7 @@ const defaultOptions = {
 export default class D3Topology {
   constructor (options) {
     this.options = _.merge(defaultOptions, options)
+    this.dragging = false
     this.proxyOptions()
   }
   /**
@@ -98,6 +99,8 @@ export default class D3Topology {
     this.scale && this.initZoomBehavior(this.scale)
     // 拖拽节点
     this.dragable && this.initDragBehavior()
+    // 外部绑定事件
+    this.bindEvents.call(this)
   }
 
   initZoomBehavior (scale) {
@@ -119,6 +122,7 @@ export default class D3Topology {
     const self = this
 
     function dragstarted(event, d) {
+      this.dragging = true
       if (!event.active) simulation.alphaTarget(0.3).restart()
       d.fx = d.x
       d.fy = d.y
@@ -134,6 +138,7 @@ export default class D3Topology {
     }
     
     function dragended(event, d) {
+      this.dragging = false
       if (!self.animate) {
         d.fx = event.x
         d.fy = event.y

@@ -1,5 +1,9 @@
+import {
+  noop,
+  proxy
+} from './utils'
+
 const defaultOptions = {
-  show: true,
   rootElement: document.body,
   html: d => d.id,
   placement: 'top'
@@ -7,14 +11,26 @@ const defaultOptions = {
 
 
 export default class D3Tip {
-  constructor (svg, options) {
-    this.svg = svg
-    this.options = _.merge(defaultOptions, options)
+  constructor (topo, options) {
+    this.topo = topo
+    this.svg = topo.svg
     this.element = this.initElement()
-    this.rootElement = this.options.rootElement
-    this.html = this.options.html
-    this.placement = this.options.placement
     this.point = this.svg.node().createSVGPoint()
+    this.options = _.merge(defaultOptions, options)
+    this.proxyOptions()
+  }
+
+  /**
+   * 将options的属性代理到this上
+   * 可以通过this.xxx直接取到options上的值
+   */
+  proxyOptions () {
+    const keys = Object.keys(this.options)
+    let i = keys.length
+    while (i--) {
+      const key = keys[i]
+      proxy(this, `options`, key)
+    }
   }
 
   initElement () {
