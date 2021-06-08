@@ -18,6 +18,7 @@ const defaultOptions = {
   alpha: 0.3,
   inited: noop,
   ticked: noop,
+  beforeUpdate: noop,
   bindEvents: noop,
   createLayers: noop,
   createLinks: noop,
@@ -72,21 +73,27 @@ export default class D3Topology {
   }
 
   update ({ nodes, links }) {
-    const context = this
+    // 钩子
+    this.beforeUpdate.call(this, nodes, links)
     // 清除画布
     this.clear()
     // 更新数据
     this._nodes = _.cloneDeep(nodes)
     this._links = _.cloneDeep(links)
     // 设置数据
-    this.simulation.nodes(this._nodes)
-    this.simulation.force('link').links(this._links)
+    if (this.animate) {
+      this.simulation.nodes(this._nodes)
+      this.simulation.force('link').links(this._links)
+    } else {
+      this.initRelationship()
+    }
     // node后绘制确保覆盖在线上
     this.layers = this.createLayers.call(this, this.zoom)
     this.links = this.createLinks.call(this, this.zoom, this._links)
     this.nodes = this.createNodes.call(this, this.zoom, this._nodes)
-
+    // 绑定事件
     this.attachEvent()
+    // 更新视图
     if (this.animate) {
       this.simulation.alphaTarget(this.alpha).restart()
     } else {
@@ -122,7 +129,7 @@ export default class D3Topology {
     const self = this
 
     function dragstarted(event, d) {
-      this.dragging = true
+      self.dragging = true
       if (!event.active) simulation.alphaTarget(0.3).restart()
       d.fx = d.x
       d.fy = d.y
@@ -133,19 +140,21 @@ export default class D3Topology {
       d.fy = event.y
 
       if (!self.animate) {
+        d.x = event.x
+        d.y = event.y
         self.ticked()
       }
     }
     
     function dragended(event, d) {
-      this.dragging = false
+      self.dragging = false
+      if (!event.active) simulation.alphaTarget(0)
+      d.fx = null
+      d.fy = null
+
       if (!self.animate) {
         d.fx = event.x
         d.fy = event.y
-      } else {
-        if (!event.active) simulation.alphaTarget(0)
-        d.fx = null
-        d.fy = null
       }
     }
 
@@ -159,5 +168,27 @@ export default class D3Topology {
     this.layers && this.layers.remove()
     this.links && this.links.remove()
     this.nodes && this.nodes.remove()
+  }
+
+  initRelationship () {
+    this.idToLNode = new Map(this._nodes.map(d => {
+      // 默认将位置初始化在图中央
+      if (isNaN(d.x)) {
+        d.x = this.width / 2
+      }
+      if (isNaN(d.y)) {
+        d.y = this.height / 2
+      }
+      return [d.id, d]
+    }))
+    this._links = this._links.map(link => {
+      const source = this.idToLNode.get(link.source)
+      const target = this.idToLNode.get(link.target)
+      return {
+        ...link,
+        source,
+        target
+      }
+    })
   }
 }
