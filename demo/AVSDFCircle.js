@@ -1,6 +1,7 @@
 const NODE_W = 5
 const NODE_H = 5
 const NODE_SEPARATION = 60
+const MIN_RADIUS = 0
 
 export default class AVSDFCircle {
   constructor (data, position, nodeSeparation = NODE_SEPARATION) {
@@ -15,8 +16,7 @@ export default class AVSDFCircle {
     this.stack = []
     this.initRelationship()
     this.calculateRadius()
-    this.layout()
-    console.log('AVSDFCircle', this.data)
+    console.log('AVSDFCircle', this)
   }
 
   layout () {
@@ -26,6 +26,19 @@ export default class AVSDFCircle {
       const node = this.findNodeToPlace()
       this.putInOrder(node)
     }
+  }
+
+  randomLayout () {
+    this.nodes.map((node, idx) => {
+      if (idx === 0) {
+        node.angle = 0
+      } else {
+        node.angle = this.nodes[idx - 1].angle + 2 * Math.PI * (this.nodeDiagonal + this.nodeSeparation) / this.perimeter
+      }
+  
+      node.x = this.centerX + this.radius * Math.cos(node.angle)
+      node.y = this.centerY + this.radius * Math.sin(node.angle)
+    })
   }
 
   initRelationship () {
@@ -45,10 +58,9 @@ export default class AVSDFCircle {
     this.links.map(link => {
       const source = this.idToLNode.get(link.source)
       const target = this.idToLNode.get(link.target)
-      
-      source.links.push(link)
 
       if (source.id !== target.id) {
+        source.links.push(link)
         target.links.push(link)
       }
     })
@@ -64,6 +76,10 @@ export default class AVSDFCircle {
     this.perimeter = this.nodes.length * (this.nodeDiagonal + this.nodeSeparation)
     // 反向推导出需要生成的圆的半径
     this.radius = this.perimeter / ( 2 * Math.PI)
+
+    if (this.radius < MIN_RADIUS) {
+      this.radius = MIN_RADIUS
+    }
   }
 
   putInOrder (node) {
@@ -85,14 +101,13 @@ export default class AVSDFCircle {
     let sDegreeNode = undefined;
     if (this.stack.length === 0) {
       sDegreeNode = this.findUnorderedSmallestDegreeNode()
-      console.log('sDegreeNode', sDegreeNode)
     } else {
       let foundUnorderNode = false
       while (!foundUnorderNode && !(this.stack.length === 0)) {
         sDegreeNode = this.stack.pop()
         foundUnorderNode = !this.isOrdered(sDegreeNode)
       }
-      if (foundUnorderNode) {
+      if (!foundUnorderNode) {
         sDegreeNode = undefined
       }
     }
@@ -112,7 +127,6 @@ export default class AVSDFCircle {
         }
       }
     }
-
     return sDegreeNode
   }
 
@@ -154,7 +168,6 @@ export default class AVSDFCircle {
       return a.links.length - b.links.length
     })
 
-    console.log('neighbors', result)
     return result
   }
 
