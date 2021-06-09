@@ -1,4 +1,5 @@
 import { D3Topology, D3Tip } from '../src'
+import AVSDFCircle from './AVSDFCircle'
 
 function createNode (id) {
   return {
@@ -33,40 +34,7 @@ function createTopoDatas (nodeNum, linkNum) {
 
 const data = createTopoDatas(10, 15)
 
-/**
- * 圆形分布位置生成算法
- * @param {*} data 点数据集
- * @param {*} position 中心位置 [x, y]
- * @param {*} nodeSeparation 点与点之间的距离
- */
-function setCirclePosition (data, position, nodeSeparation = 60) {
-  const { nodes, links } = data
-  const [ centerX, centerY ] = position
-  // 点的长宽
-  const nodeW = 5
-  const nodeH = 5
-  // 对角线长度
-  const nodeDiagonal = Math.sqrt(nodeW * nodeW + nodeH * nodeH)
-  // 计算一整个圆周的周长
-  const perimeter = nodes.length * (nodeDiagonal + nodeSeparation)
-  // 反向推导出需要生成的圆的半径
-  const radius = perimeter / ( 2 * Math.PI)
-
-  nodes.map((node, idx) => {
-    if (idx === 0) {
-      node.angle = 0
-    } else {
-      node.angle = nodes[idx - 1].angle + 2 * Math.PI * (nodeDiagonal + nodeSeparation) / perimeter
-    }
-
-    node.x = centerX + radius * Math.cos(node.angle)
-    node.y = centerY + radius * Math.sin(node.angle)
-  })
-
-  console.log(nodes)
-}
-
-setCirclePosition(data, [1000 / 2, 700 / 2])
+const circle = new AVSDFCircle(data, [1000 / 2, 700 / 2])
 
 let topo_nodes
 let topo_links
@@ -141,6 +109,6 @@ const updateBtn = document.getElementById('update-btn')
 
 updateBtn.addEventListener('click', event => {
   const data = createTopoDatas(20, 30)
-  setCirclePosition(data, [1000 / 2, 700 / 2])
+  new AVSDFCircle(data, [1000 / 2, 700 / 2])
   tp.update(data)
 })
